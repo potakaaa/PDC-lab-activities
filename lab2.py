@@ -1,5 +1,6 @@
 import math
 import threading
+import time
 from multiprocessing import Process, Queue
 import os
 
@@ -38,6 +39,7 @@ def run_threading_gwa(grades_list):
         print("Invalid input.")
         return
 
+    start_time = time.time()
     threads = []
     results = [] 
     chunk_size = math.ceil(len(grades_list) / num_threads)
@@ -75,6 +77,7 @@ def run_threading_gwa(grades_list):
         print("\n[Main] Total count is zero.")
         
     print("[Main] All threads finished.")
+    print(f"Execution time: {time.time() - start_time:.4f} seconds")
 
 def worker_multiprocessing_gwa(grades_chunk, queue, proc_id):
     print(f"[Process-{proc_id} | PID {os.getpid()}] STARTING with grades: {grades_chunk}")
@@ -103,6 +106,7 @@ def run_multiprocessing_gwa(grades):
         except ValueError:
             print("Invalid input. Enter an integer.")
 
+    start_time = time.time()
     chunk_size = max(1, len(grades) // num_processes)
     grade_chunks = [grades[i:i+chunk_size] for i in range(0, len(grades), chunk_size)]
 
@@ -130,6 +134,8 @@ def run_multiprocessing_gwa(grades):
         print(f"\n[Main] Global GWA (Multiprocessing): {global_gwa:.2f}")
     else:
         print("[Main] Total count is 0.")
+
+    print(f"Execution time: {time.time() - start_time:.4f} seconds")
 
 def main():
     grades_list = []
