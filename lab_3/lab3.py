@@ -173,7 +173,46 @@ def process_payroll_batch(emp_list):
                   f"{res['total_deduction']:>15,.2f} {res['net']:>15,.2f}")
 
 
+def collect_new_employees():
+    """Prompts user for new employee data."""
+    new_employees = []
+    try:
+        print("\n--- User Input Section ---")
+        count_input = input("How many new employees do you want to add? ").strip()
+        if not count_input:
+            return []
+        
+        count = int(count_input)
+        
+        for i in range(count):
+            print(f"\nEmployee #{i+1}")
+            name = input("Enter Name: ").strip()
+            
+            while True:
+                try:
+                    salary_str = input(f"Enter Salary for {name}: ").strip()
+                    salary = float(salary_str)
+                    if salary < 0:
+                        print("Salary must be non-negative. Please try again.")
+                        continue
+                    break
+                except ValueError:
+                    print("Invalid salary format. Please enter a number.")
+            
+            new_employees.append((name, salary))
+            
+    except ValueError:
+        print("Invalid number of employees entered.")
+        
+    return new_employees
+
+
 if __name__ == "__main__":
-    # Data Parallelism Demonstration
+    # Data Parallelism Demonstration (Initial Batch)
     # employees list is defined at the top of the file
     process_payroll_batch(employees)
+    
+    # User Input Batch
+    user_employees = collect_new_employees()
+    if user_employees:
+        process_payroll_batch(user_employees)
