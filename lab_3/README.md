@@ -8,9 +8,11 @@
 3. Analyze ThreadPoolExecutor execution in relation to the GIL and CPU cores. Did true parallelism occur?
    ThreadPoolExecutor actually didn’t show true parallelism. Because of Python’s GIL, only one thread can execute code. ThreadPoolExecutor actually provides concurrency, which is great for I/O-bound tasks, but for CPU-bound math like tax deductions, the threads actually take turns on a single CPU core.
 
-4. Explain why ProcessPoolExecutor enables true parallelism, including memory
-   space separation and GIL behavior.
-5. Evaluate scalability if the system increases from 5 to 10,000 employees. Which
-   approach scales better and why?
-6. Provide a real-world payroll system example. Indicate where Task Parallelism and
-   Data Parallelism would be applied, and which executor you would use.
+4. Explain why ProcessPoolExecutor enables true parallelism, including memory space separation and GIL behavior.
+   The ProcessPoolExecutor achieves true parallelism by spawning separate OS processes, each with its own private memory space and dedicated Python interpreter. This architecture bypasses the Global Interpreter Lock (GIL) because each process has its own lock, allowing tasks to run on multiple CPU cores simultaneously. Unlike threading, where the GIL forces execution onto a single core, multiprocessing ensures that heavy computations do not contend for the same resources.
+
+5. Evaluate scalability if the system increases from 5 to 10,000 employees. Which approach scales better and why?
+   As a system scales from 5 to 10,000 employees, ProcessPoolExecutor scales better for CPU-bound tasks like tax calculations. While a single thread or process handles 5 employees instantly, 10,000 records would create a bottleneck on a single core; multiprocessing distributes this load across all available hardware. However, for 10,000 concurrent I/O requests, an asynchronous or threaded approach might be more memory-efficient than spawning thousands of heavy processes.
+
+6. Provide a real-world payroll system example. Indicate where Task Parallelism and Data Parallelism would be applied, and which executor you would use.
+   In a payroll system, Data Parallelism would be used to split the list of 10,000 employees into chunks, calculating individual net pay across multiple cores using ProcessPoolExecutor. While Task Parallelism would simultaneously handle distinct operations, such as generating PDF payslips while a separate process triggers bank API transfers. For this scenario, ProcessPoolExecutor is the preferred choice to ensure heavy mathematical transformations don’t stall the entire system.
