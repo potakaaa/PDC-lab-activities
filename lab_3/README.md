@@ -1,38 +1,13 @@
-# PDC-python-calculator
-
-# PDC-multithreading-multiprocessing
-
-1. Which approach demonstrates true parallelism in Python? Explain.
-   The multiprocessing approach demonstrates true parallelism because it uses separate memory and CPU cores for each task through the "multiprocessing" module, which bypasses the GIL by giving each process its own Python interpeter and memory space.
-
-2. Compare execution times between multithreading and multiprocessing.
-   | Method | Execution Pattern | GWA Output | Time |
-   | :--- | :--- | :--- | :--- |
-   | **Multithreading** | Interleaved | 90.00 | 0.0007s |
-   | **Multiprocessing** | Sequential\* | 90.00 | 0.0186s |
-   This table highlights the speed difference, where threading is much faster for smaller tasks.
-
-3. Can Python handle true parallelism using threads? Why or why not?
-   No, Python cannot handle true parallelism using threads. Python has a mechanism called the GIL (Global Interpreter Lock), which is essentially a physical lock that only allows one thread to hold control of the interpreter for Python at a time.
-
-4. What happens if you input a large number of grades (e.g., 1000)? Which method is faster and why?
-   Multithreading is faster in the case if you inputted a large number of grades as the low complexity of calculating the average for the GWA makes it the best option in terms of startup and management overhead. For startup, using multithreading is better because it simply calls to create a new execution path in the current process. In terms of management overhead, since multithreading shares memory, threads have zero overhead for data transfer since they can communicate by modifying a global variable or shared object.
-
-5. Which method is better for CPU-bound tasks and which for I/O-bound tasks?
-   For CPU-bound tasks, multiprocessing is significantly faster as each core works simultaneously. Multithreading is equal to or slower than running a single thread, but the overhead of having to switch between threads can increase the total execution time versus a sequential loop. For I/O-bound tasks, multithreading is faster and lightweight as while one thread is "sleeping" (waiting for a response), the next thread immediately starts its work. Multiprocessing can be slower as it requires each new process to create a new interpreter and allocate separate memory, which can lead to a slower total time of execution. For short I/O tasks, the time taken for this startup can be longer than the task itself.
-
-6. How did your group apply creative coding or algorithmic solutions in this lab?
-   Our group applied data chunking by using math.ceil(len/num), which efficiently balances load across the cores. We applied locking through with pting_lock: which keeps the console output readable and organized. We also applied queueing through q.put()/q.get() which manages data flow between isolated environments. Lastly, we even implemented error handling by adding try except blocks in our code to prevent single thread failures from crashing the app.
-
 # PDC-task-and-data-parallelism
+1. Differentiate Task and Data Parallelism. Identify which part of the lab demonstrates each and justify the workload division.
+   Task parallelism is explicitly demonstrated in the parallel_compute function of the lab. In this section, the workload is divided by functionality, where a single data point, the employee's salary in this case, is processed by four distinct functions: compute_sss, compute_philhealth, compute_pagibig, and compute_tax. This division is justified because each deduction is a logically independent "task." Since the calculation for health insurance does not depend on the result of the income tax calculation, they can be executed concurrently using a ThreadPoolExecutor. Data parallelism, on the other hand, is showcased in the process_payroll_batch function. Here, the workload is divided by data partitioning rather than by the type of task performed. The system applies the exact same payroll logic, encapsulated in the calculate_employee_payroll function, to a collection of different data elements simultaneously. This division is justified by the need to handle high volumes of data efficiently. By utilizing a ProcessPoolExecutor, the program can distribute individual employee records across multiple CPU cores, allowing the system to process a large batch of payroll entries in parallel, which is significantly faster than processing each employee one after another.
 
-1. Differentiate Task and Data Parallelism. Identify which part of the lab
-   demonstrates each and justify the workload division.
-2. Explain how concurrent.futures managed execution, including submit(),
-   map(), and Future objects. Discuss the purpose of with when creating an
-   Executor.
-3. Analyze ThreadPoolExecutor execution in relation to the GIL and CPU cores. Did
-   true parallelism occur?
+2. Explain how concurrent.futures managed execution, including submit(), map(), and Future objects. Discuss the purpose of with when creating an Executor.
+   Concurrent.futures is a module that manages execution primarily through its Executor classes, which are best utilized within a “with” statement to act as a context manager, that ensures the Executor shuts down properly by automatically calling “shutdown(wait=True)”, which means that the program won’t progress until all threads and processes in the pool have finished their work, which prevents resource leaks. Submit() schedules a single callable to be executed and then returns a “Future” object. Future objects are essentially promises of a result, representing an asynchronous operation that hasn’t finished yet. You then use “.result()” to block execution until the value is ready. Lastly, “map()” applies a function to an iterable of data. It’s best for task parallelism where tasks are unique.
+
+3. Analyze ThreadPoolExecutor execution in relation to the GIL and CPU cores. Did true parallelism occur?
+   ThreadPoolExecutor actually didn’t show true parallelism. Because of Python’s GIL, only one thread can execute code. ThreadPoolExecutor actually provides concurrency, which is great for I/O-bound tasks, but for CPU-bound math like tax deductions, the threads actually take turns on a single CPU core.
+
 4. Explain why ProcessPoolExecutor enables true parallelism, including memory
    space separation and GIL behavior.
 5. Evaluate scalability if the system increases from 5 to 10,000 employees. Which
