@@ -6,7 +6,7 @@ salaries. Uses ThreadPoolExecutor for concurrent calculation of each
 deduction type.
 """
 import math
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 # Sample employee data: (name, monthly_salary)
 employees = [
@@ -116,6 +116,64 @@ def print_deductions(deductions):
     print("=" * width)
 
 
-# Demo: compute and display deductions for a sample salary
-salary = 1000000
-print_deductions(parallel_compute(salary))
+def process_single_salary(salary):
+    """Executes Task Parallelism for a single salary computation."""
+    print(f"\n--- Task Parallelism for Salary: {salary:,.2f} ---")
+    deductions = parallel_compute(salary)
+    print_deductions(deductions)
+
+
+def calculate_employee_payroll(employee):
+    """
+    Performs complete payroll computation for one employee including
+    deductions calculated in parallel.
+    """
+    name, salary = employee
+
+    # Calculate deductions using Task Parallelism
+    deductions = parallel_compute(salary)
+
+    # Calculate totals
+    total_deductions = (deductions["sss"] +
+                        deductions["philhealth"] +
+                        deductions["pagibig"] +
+                        deductions["tax"])
+    net_pay = salary - total_deductions
+
+    # Return full details including name
+    return {
+        "name": name,
+        "salary": salary,
+        "sss": deductions["sss"],
+        "philhealth": deductions["philhealth"],
+        "pagibig": deductions["pagibig"],
+        "tax": deductions["tax"],
+        "total_deduction": total_deductions,
+        "net": net_pay
+    }
+
+
+def process_payroll_batch(emp_list):
+    """Executes Data Parallelism for multiple employees using multiprocessing."""
+    print(f"\n--- Data Parallelism: Payroll Batch Processing ---")
+    with ProcessPoolExecutor() as executor:
+        # Convert iterator to list to allow multiple passes
+        results = list(executor.map(calculate_employee_payroll, emp_list))
+
+        # 1. Print detailed payslips
+        for res in results:
+            print(f"\nEmployee: {res['name']}")
+            print_deductions(res)
+
+        # 2. Print summary table
+        print(f"\n{'Name':<10} {'Gross':>15} {'Total Ded':>15} {'Net':>15}")
+        print("-" * 55)
+        for res in results:
+            print(f"{res['name']:<10} {res['salary']:>15,.2f} "
+                  f"{res['total_deduction']:>15,.2f} {res['net']:>15,.2f}")
+
+
+if __name__ == "__main__":
+    # Data Parallelism Demonstration
+    # employees list is defined at the top of the file
+    process_payroll_batch(employees)
