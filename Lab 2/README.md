@@ -1,5 +1,3 @@
-# PDC-python-calculator
-
 # PDC=multithreading-multiprocessing
 1. Which approach demonstrates true parallelism in Python? Explain.
    The multiprocessing approach demonstrates true parallelism because it uses separate memory and CPU cores for each task through the "multiprocessing" module, which bypasses the GIL by giving each process its own Python interpeter and memory space.
