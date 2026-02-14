@@ -11,6 +11,15 @@
 
 ---
 
+## 👥 Team
+
+- Hans Matthew Del Mundo
+- Gerald Helbiro Jr.
+- Vin Marcus Gerebise
+- Ira Chloie Narisma
+
+---
+
 ## 📖 About
 
 This repository contains laboratory exercises and projects for **Parallel and Distributed Computing (PDC)**. Each lab builds on core concepts—from basic concurrency primitives to task and data parallelism—using Python's standard library.
