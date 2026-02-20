@@ -19,7 +19,10 @@ def handle_commit(files, message):
     time.sleep(1)
 
 def handle_push(remote, branch):
-    pass
+    print("Pushing to remote: ", remote)
+    print("Branch: ", branch)
+    print("Doing push...")
+    time.sleep(2)
 
 def handle_create_pr(branch, title, desc):
     pass
