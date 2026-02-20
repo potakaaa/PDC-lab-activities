@@ -6,7 +6,9 @@ def handle_prompt(prompt):
     time.sleep(5)
 
 def handle_add(files):
-    pass
+    print("Adding files: ", files)
+    print("Doing add...")
+    time.sleep(3)
 
 def handle_commit(files, message):
     pass
