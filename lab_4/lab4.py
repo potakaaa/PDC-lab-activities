@@ -1,10 +1,14 @@
+import time
+
 def handle_prompt(prompt):
-    pass
+    print("Prompt: ", prompt)
+    print("Doing prompt...")
+    time.sleep(5)
 
 def handle_add(files):
     pass
 
-def handle_commit(message):
+def handle_commit(files, message):
     pass
 
 def handle_push(remote, branch):
