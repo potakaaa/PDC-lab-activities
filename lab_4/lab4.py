@@ -8,10 +8,15 @@ def handle_prompt(prompt):
 def handle_add(files):
     print("Adding files: ", files)
     print("Doing add...")
+    
     time.sleep(3)
+    return files
 
 def handle_commit(files, message):
-    pass
+    print("Committing files: ", files)
+    print("Commit message: ", message)
+    print("Doing commit...")
+    time.sleep(1)
 
 def handle_push(remote, branch):
     pass
