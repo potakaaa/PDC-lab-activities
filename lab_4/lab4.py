@@ -180,5 +180,27 @@ def run_sequential() -> None:
 
 
 def run_parallel() -> None:
-    """Run agent workflow in parallel (placeholder)."""
-    pass
+    """Run agent workflow in parallel."""
+    start_time = time.time()
+    threads = []
+    
+    for task in tasks:
+        thread = threading.Thread(target=run_agent, kwargs=task)
+        threads.append(thread)
+        thread.start()
+        
+    for thread in threads:
+        thread.join()
+        
+    end_time = time.time()
+    print(f"Parallel execution time: {end_time - start_time:.2f} seconds")
+
+
+if __name__ == "__main__":
+    print("Running sequential execution...")
+    run_sequential()
+    
+    print("\n" + "="*60 + "\n")
+    
+    print("Running parallel execution...")
+    run_parallel()
